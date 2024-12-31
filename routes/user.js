@@ -2,6 +2,7 @@ const e = require('express');
 const express = require('express');
 const router = express.Router();
 const { login, register } = require('../models/user');
+const jwt = require('jsonwebtoken');
 
 router.post('/login', async (req, res) => {
     console.log(req.body);
@@ -10,13 +11,18 @@ router.post('/login', async (req, res) => {
     try {
         let { error, user } = await login(email, password)
         console.log(user, error)
+        // 生成 token
+        const token = jwt.sign({ id: user.id, username: user.username, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });// 1h 过期时间
         if (error) {
             return res.status(201).json({
                 error: error
             });
         }
         res.status(200).json({
-            ...user
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            token
         });
     } catch (error) {
         return res.status(500).json({

@@ -6,6 +6,12 @@ $(function () {
     }
 
     let user = JSON.parse(localStorage.getItem('user'));
+    // 将 token 存入 header
+    $.ajaxSetup({
+        headers: {
+            'Authorization': user.token
+        }
+    });
     if (!user) {
         window.location.href = '/login.html';
     } else {
